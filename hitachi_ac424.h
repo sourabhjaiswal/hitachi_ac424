@@ -40,6 +40,7 @@ const uint8_t HITACHI_AC424_MODE_COOL = 3;
 const uint8_t HITACHI_AC424_MODE_DRY = 5;
 const uint8_t HITACHI_AC424_MODE_HEAT = 6;
 const uint8_t HITACHI_AC424_MODE_AUTO = 14;
+const uint8_t HITACHI_AC424_MODE_POWERFUL = 19;
 
 const uint8_t HITACHI_AC424_FAN_BYTE = HITACHI_AC424_MODE_BYTE;
 const uint8_t HITACHI_AC424_FAN_MIN = 1;
@@ -73,8 +74,9 @@ const uint8_t HITACHI_AC424_MILDEWPROOF_OFFSET = 2;  // Mask 0b00000x00
 const uint16_t HITACHI_AC424_STATE_LENGTH = 53;
 const uint16_t HITACHI_AC424_BITS = HITACHI_AC424_STATE_LENGTH * 8;
 
-#define GETBIT8(a, b) ((a) & ((uint8_t) 1 << (b)))
-#define GETBITS8(data, offset, size) (((data) & (((uint8_t) UINT8_MAX >> (8 - (size))) << (offset))) >> (offset))
+#define HITACHI_AC424_GETBIT8(a, b) ((a) & ((uint8_t) 1 << (b)))
+#define HITACHI_AC424_GETBITS8(data, offset, size) \
+  (((data) & (((uint8_t) UINT8_MAX >> (8 - (size))) << (offset))) >> (offset))
 
 class HitachiClimate : public climate_ir::ClimateIR {
  public:
@@ -85,11 +87,10 @@ class HitachiClimate : public climate_ir::ClimateIR {
                               {climate::CLIMATE_SWING_OFF, climate::CLIMATE_SWING_HORIZONTAL}) {}
 
  protected:
-  uint8_t remote_state_[HITACHI_AC424_STATE_LENGTH]{0x01, 0x10, 0x00, 0x40, 0xBF, 0xFF, 0x00, 0xCC, 0x33, 0x92, 0x6D,
-                                                    0x13, 0xEC, 0x5C, 0xA3, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
-                                                    0xFF, 0x00, 0xFF, 0x53, 0xAC, 0xF1, 0x0E, 0x00, 0xFF, 0x00, 0xFF,
-                                                    0x80, 0x7F, 0x03, 0xFC, 0x01, 0xFE, 0x88, 0x77, 0x00, 0xFF, 0x00,
-                                                    0xFF, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00};
+  uint8_t remote_state_[HITACHI_AC424_STATE_LENGTH]{
+      0x01, 0x10, 0x00, 0x40, 0xBF, 0xFF, 0x00, 0xCC, 0x33, 0x92, 0x6D, 0x13, 0xEC, 0x5C, 0xA3, 0x00, 0xFF, 0x00,
+      0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x53, 0xAC, 0xF1, 0x0E, 0x00, 0xFF, 0x00, 0xFF, 0x80, 0x7F, 0x03,
+      0xFC, 0x01, 0xFE, 0x88, 0x77, 0x00, 0xFF, 0x00, 0xFF, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00};
   uint8_t previous_temp_{27};
   // Transmit via IR the state of this climate controller.
   void transmit_state() override;
